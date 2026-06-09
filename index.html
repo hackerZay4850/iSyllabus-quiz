@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iSyllabus 2 — Islamic Studies Revision</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #F7F3EE;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #1A1A1A;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(135deg, #1A3A5C 0%, #2E6B5A 100%);
+      color: white;
+      padding: 24px 20px 20px;
+      text-align: center;
+    }
+    .header-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+    .header-title { font-size: 26px; font-weight: bold; margin-bottom: 4px; }
+    .header-sub { font-size: 13px; opacity: 0.8; }
+
+    /* ── CONTAINER ── */
+    .container { max-width: 680px; margin: 0 auto; padding: 24px 16px; }
+
+    /* ── SETUP ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: bold;
+      color: #888;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .topic-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .topic-btn {
+      padding: 7px 13px;
+      border-radius: 20px;
+      border: 2px solid var(--col);
+      background: transparent;
+      color: var(--col);
+      font-size: 12px;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      font-weight: normal;
+      transition: all 0.15s;
+    }
+    .topic-btn.active {
+      background: var(--col);
+      color: white;
+      font-weight: bold;
+    }
+    .link-row { display: flex; gap: 10px; margin-bottom: 28px; align-items: center; }
+    .link-btn {
+      font-size: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: Georgia, serif;
+    }
+    .link-sep { color: #ccc; }
+
+    .count-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .count-btn {
+      width: 52px; height: 52px;
+      border-radius: 10px;
+      border: 2px solid #DDD;
+      background: white;
+      color: #444;
+      font-size: 15px;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: normal;
+    }
+    .count-btn.active {
+      border-color: #1A3A5C;
+      background: #1A3A5C;
+      color: white;
+      font-weight: bold;
+    }
+    .count-btn:disabled { opacity: 0.4; cursor: default; }
+
+    .count-hint { color: #888; font-size: 12px; margin-bottom: 28px; }
+
+    /* ── PRIMARY BUTTON ── */
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #1A3A5C, #2E6B5A);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    .btn-primary:disabled { background: #CCC; cursor: default; }
+
+    /* ── QUIZ ── */
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    .progress-track {
+      height: 5px;
+      background: #DDD;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1A3A5C, #2E6B5A);
+      border-radius: 3px;
+      transition: width 0.4s;
+    }
+
+    .topic-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .question-text {
+      font-size: 17px;
+      color: #1A1A1A;
+      margin-bottom: 22px;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .option-btn {
+      padding: 13px 16px;
+      background: white;
+      border: 2px solid #DDD;
+      border-radius: 8px;
+      color: #222;
+      font-size: 14px;
+      font-family: Georgia, serif;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .option-btn.selected { background: #EEF3FA; border-color: #1A3A5C; color: #1A3A5C; }
+    .option-btn.correct  { background: #E6F4ED; border-color: #2E6B5A; color: #1A5C3A; }
+    .option-btn.wrong    { background: #FAE6E6; border-color: #C0392B; color: #C0392B; }
+    .option-btn.revealed { cursor: default; }
+
+    .option-letter {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #EEE;
+      color: #888;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .option-btn.selected .option-letter { background: #1A3A5C; color: white; }
+    .option-btn.correct  .option-letter { background: #2E6B5A; color: white; }
+    .option-btn.wrong    .option-letter { background: #C0392B; color: white; }
+
+    .explanation {
+      padding: 14px 16px;
+      background: #F0F7F4;
+      border-left: 4px solid #2E6B5A;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: #2C4A3A;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .btn-check {
+      width: 100%; padding: 14px;
+      border-radius: 8px; border: none;
+      background: #1A3A5C;
+      color: white; font-size: 15px;
+      font-family: Georgia, serif; font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-check:disabled { background: #CCC; cursor: default; }
+    .btn-next {
+      width: 100%; padding: 14px;
+      border-radius: 8px; border: none;
+      background: linear-gradient(135deg, #1A3A5C, #2E6B5A);
+      color: white; font-size: 15px;
+      font-family: Georgia, serif; font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* ── RESULTS ── */
+    .results-centre { text-align: center; margin-bottom: 28px; }
+    .score-ring {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 0 0 8px white, 0 0 0 10px #2E6B5A33;
+    }
+    .score-inner {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: white;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .score-pct { font-size: 28px; font-weight: bold; color: #1A3A5C; }
+    .score-frac { font-size: 11px; color: #888; }
+    .score-grade { font-size: 18px; font-weight: bold; color: #1A3A5C; }
+
+    .breakdown-card {
+      background: white;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .breakdown-row { margin-bottom: 10px; }
+    .breakdown-header {
+      display: flex; justify-content: space-between;
+      font-size: 12px; margin-bottom: 3px;
+    }
+    .breakdown-track {
+      height: 5px; background: #EEE; border-radius: 3px;
+    }
+    .breakdown-fill {
+      height: 100%; border-radius: 3px;
+      transition: width 0.5s;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #AAA;
+      padding: 16px;
+      margin-top: 8px;
+    }
+
+    /* ── HIDDEN ── */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">iSyllabus 2 · Year Revision</div>
+  <div class="header-title">Islamic Studies Mini-Test</div>
+  <div class="header-sub">Islam · Imaan · Ihsan · Living Islam</div>
+</div>
+
+<div class="container">
+  <!-- ══ SETUP SCREEN ══ -->
+  <div id="screen-setup">
+    <p style="color:#4A4A4A;font-size:14px;margin-bottom:20px;line-height:1.6;">
+      Choose your topics and how many questions, then press <strong>Start</strong>.
+    </p>
+
+    <div class="section-label">Topics</div>
+    <div class="topic-grid" id="topic-grid"></div>
+    <div class="link-row">
+      <button class="link-btn" style="color:#2E6B5A" onclick="selectAllTopics()">Select all</button>
+      <span class="link-sep">|</span>
+      <button class="link-btn" style="color:#888" onclick="clearTopics()">Clear all</button>
+    </div>
+
+    <div class="section-label">Number of Questions</div>
+    <div class="count-grid" id="count-grid"></div>
+    <div class="count-hint" id="count-hint"></div>
+
+    <button class="btn-primary" id="btn-start" onclick="startQuiz()">Start Test →</button>
+  </div>
+
+  <!-- ══ QUIZ SCREEN ══ -->
+  <div id="screen-quiz" class="hidden">
+    <div class="progress-row">
+      <span id="q-counter"></span>
+      <span id="q-score"></span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="topic-badge" id="q-badge"></div>
+    <div class="question-text" id="q-text"></div>
+    <div class="options" id="q-options"></div>
+    <div class="explanation hidden" id="q-explanation"></div>
+    <button class="btn-check" id="btn-check" disabled onclick="checkAnswer()">Check Answer</button>
+    <button class="btn-next hidden" id="btn-next" onclick="nextQuestion()">Next Question →</button>
+  </div>
+
+  <!-- ══ RESULTS SCREEN ══ -->
+  <div id="screen-results" class="hidden">
+    <div class="results-centre">
+      <div class="score-ring" id="score-ring">
+        <div class="score-inner">
+          <div class="score-pct" id="score-pct"></div>
+          <div class="score-frac" id="score-frac"></div>
+        </div>
+      </div>
+      <div class="score-grade" id="score-grade"></div>
+    </div>
+    <div class="breakdown-card">
+      <div class="section-label" style="margin-bottom:12px">Topic Breakdown</div>
+      <div id="breakdown-rows"></div>
+    </div>
+    <button class="btn-next" onclick="goSetup()">Try Again</button>
+  </div>
+</div>
+
+<div class="footer">Questions verified from iSyllabus Workbook 2 topics &amp; authoritative Islamic sources</div>
+
+<script>
+const TOPIC_COLORS = {
+  "Tawhid":                     "#7C5CBF",
+  "Ayatul Kursi":               "#2A7A6E",
+  "Revelation":                 "#1A6699",
+  "Collection of Hadith":       "#8B5A2B",
+  "Prophet Adam \u{1F54A}\u{FE0F}":            "#4A7C59",
+  "Miracles of the Prophet \u{1F54A}\u{FE0F}": "#B5500B",
+  "Sources of Islamic Law":     "#6B3A7D",
+  "Cleanliness in Islam":       "#1A7A9A",
+  "Islamic Art":                "#B8860B",
+  "Birth of the Prophet \u{1F54A}\u{FE0F}":    "#7A3030",
+  "Prophet \u{1F54A}\u{FE0F} in Makkah":       "#2C5F8A",
+  "Islamic Months":             "#2E7D5A",
+};
+
+const QUESTIONS = [
+  // ── TAWHID ──────────────────────────────────────────────────────
+  { topic:"Tawhid", q:"What does the word 'Tawhid' mean?", opts:["The oneness of Allah","The five pillars of Islam","The Day of Judgement","The Quran"], ans:0, exp:"Tawhid means the oneness of Allah — the belief that Allah alone is God, with no partners or equals. It is the foundation of all Islamic belief." },
+  { topic:"Tawhid", q:"What is the Arabic term for associating partners with Allah, which is strictly forbidden?", opts:["Shirk","Kufr","Fasiq","Nifaq"], ans:0, exp:"Shirk means associating partners with Allah and is considered the gravest sin in Islam, directly contradicting Tawhid." },
+  { topic:"Tawhid", q:"Which of these is one of the three categories of Tawhid?", opts:["Tawhid al-Rububiyyah (Oneness of Lordship)","Tawhid al-Salah (Oneness of Prayer)","Tawhid al-Kitab (Oneness of the Book)","Tawhid al-Ummah (Oneness of the Community)"], ans:0, exp:"Tawhid al-Rububiyyah is the belief that Allah alone is the Lord, Creator, and Sustainer of all things. This is one of the three categories of Tawhid." },
+  { topic:"Tawhid", q:"Which surah is often called the 'surah of Tawhid' because it summarises the oneness of Allah?", opts:["Surah Al-Fatiha","Surah Al-Ikhlas","Surah Al-Falaq","Surah Al-Baqarah"], ans:1, exp:"Surah Al-Ikhlas (Chapter 112) declares: 'Say: He is Allah, the One. Allah, the Eternal Refuge. He neither begets nor is born, nor is there any equivalent to Him.'" },
+  { topic:"Tawhid", q:"The Shahada is the declaration of faith. How does it express Tawhid?", opts:["It thanks Allah for His blessings","It affirms there is no god but Allah and Muhammad \uFE0F is His messenger","It describes the pilgrimage to Makkah","It outlines the payment of charity"], ans:1, exp:"The Shahada — 'There is no god but Allah, and Muhammad \uFE0F is His Messenger' — is a direct expression of Tawhid and the first pillar of Islam." },
+
+  // ── AYATUL KURSI ────────────────────────────────────────────────
+  { topic:"Ayatul Kursi", q:"In which surah of the Quran is Ayatul Kursi found?", opts:["Surah Al-Fatiha","Surah Al-Baqarah","Surah Al-Imran","Surah An-Nisa"], ans:1, exp:"Ayatul Kursi is verse 255 of Surah Al-Baqarah (the 2nd chapter of the Quran)." },
+  { topic:"Ayatul Kursi", q:"What does 'Kursi' mean in Arabic?", opts:["Light","Throne","Mercy","Knowledge"], ans:1, exp:"Kursi means 'Throne'. Ayatul Kursi is known as the Throne Verse — it states that Allah's Kursi extends over the heavens and the earth." },
+  { topic:"Ayatul Kursi", q:"What key attribute of Allah does Ayatul Kursi begin by describing?", opts:["He is the Most Merciful","He is the Almighty","There is no god except Him, the Ever-Living, All-Sustaining","He is the Creator of all things"], ans:2, exp:"Ayatul Kursi opens: 'Allah — there is no god except Him, the Ever-Living, All-Sustaining.' This affirms Tawhid directly." },
+  { topic:"Ayatul Kursi", q:"According to hadith, what is a benefit of reciting Ayatul Kursi after every obligatory prayer?", opts:["Your sins are immediately forgiven","Nothing stands between you and Paradise except death","You receive the reward of a full night of prayer","An angel writes your name in the Book of the Righteous"], ans:1, exp:"The Prophet \uFE0F said: 'Whoever recites Ayatul Kursi after every obligatory prayer, nothing will stand between him and Paradise except death.'" },
+  { topic:"Ayatul Kursi", q:"Ayatul Kursi states that Allah's knowledge encompasses what?", opts:["Only the deeds of Muslims","Whatever is in the heavens and the earth","Only what is hidden in the heart","The past but not the future"], ans:1, exp:"Ayatul Kursi states that Allah knows 'what is before them and what is behind them' — His knowledge encompasses everything in the heavens and the earth." },
+
+  // ── REVELATION ──────────────────────────────────────────────────
+  { topic:"Revelation", q:"Through which angel did the Prophet \uFE0F receive the first revelation of the Quran?", opts:["Jibreel (Gabriel)","Israfeel","Mikaeel","Izraeel"], ans:0, exp:"The Prophet \uFE0F received revelation through Angel Jibreel (Gabriel), the greatest of angels, entrusted with delivering Allah's messages to the prophets." },
+  { topic:"Revelation", q:"Where was the Prophet \uFE0F when he received the very first revelation?", opts:["In Madinah","In the Cave of Hira","In the Masjid al-Haram","In his home in Makkah"], ans:1, exp:"The first revelation came in the Cave of Hira, on Mount Nur near Makkah. The first words were the beginning of Surah Al-'Alaq: 'Read in the name of your Lord.'" },
+  { topic:"Revelation", q:"What were the very first words of the Quran revealed to the Prophet \uFE0F?", opts:["In the name of Allah, the Most Gracious","Read in the name of your Lord who created","Praise be to Allah, Lord of all worlds","Say: He is Allah, the One"], ans:1, exp:"The first revelation was Surah Al-'Alaq (96:1): 'Read in the name of your Lord who created.' This emphasises the importance of knowledge in Islam." },
+  { topic:"Revelation", q:"How old was the Prophet \uFE0F when he received the first revelation?", opts:["25","30","40","50"], ans:2, exp:"The Prophet \uFE0F was approximately 40 years old when he received the first revelation in the Cave of Hira." },
+  { topic:"Revelation", q:"What is the Arabic word for divine revelation communicated to the prophets?", opts:["Hadith","Wahy","Sunnah","Ijaz"], ans:1, exp:"Wahy means divine revelation — the way Allah communicated His message to the prophets. The Quran is the direct Wahy of Allah revealed to the Prophet Muhammad \uFE0F." },
+
+  // ── COLLECTION OF HADITH ────────────────────────────────────────
+  { topic:"Collection of Hadith", q:"What is a Hadith?", opts:["A chapter of the Quran","A record of the sayings and actions of the Prophet \uFE0F","A type of Islamic prayer","A ruling from a scholar"], ans:1, exp:"A Hadith is a report of the sayings, actions, or approvals of the Prophet \uFE0F. Hadith collections were compiled to preserve the Sunnah." },
+  { topic:"Collection of Hadith", q:"Which of the following is a famous and highly respected collection of Hadith?", opts:["Sahih Al-Bukhari","Tafsir Ibn Kathir","Fiqh Al-Akbar","Kitab Al-Umm"], ans:0, exp:"Sahih Al-Bukhari, compiled by Imam Muhammad al-Bukhari, is one of the most respected Hadith collections in Sunni Islam." },
+  { topic:"Collection of Hadith", q:"What is the 'Sunnah'?", opts:["The Quran in Arabic","The way of life and practices of the Prophet \uFE0F","A collection of Islamic poetry","The consensus of Muslim scholars"], ans:1, exp:"The Sunnah refers to the way of life, practices, and teachings of the Prophet \uFE0F. It is preserved through the Hadith and forms the second most important source of Islamic guidance." },
+  { topic:"Collection of Hadith", q:"What is an 'isnad' in the science of Hadith?", opts:["The meaning or text of the Hadith","The chain of narrators who transmitted the Hadith","A type of weak Hadith","The scholarly commentary on a Hadith"], ans:1, exp:"The isnad is the chain of narrators — the list of people who passed on the Hadith from one generation to the next. Scholars examined these chains to verify authenticity." },
+
+  // ── PROPHET ADAM ────────────────────────────────────────────────
+  { topic:"Prophet Adam \u{1F54A}\u{FE0F}", q:"What is Prophet Adam (AS) known as in Islamic tradition?", opts:["Father of the Prophets","Father of Humankind","The first Khalifah on earth","The Master of all creation"], ans:1, exp:"Prophet Adam (AS) is known as the Father of Humankind — the first human being, created by Allah and honoured as the first Prophet." },
+  { topic:"Prophet Adam \u{1F54A}\u{FE0F}", q:"What were Adam (AS) and Hawwa (Eve) forbidden to do in Paradise?", opts:["Leave the garden","Eat from a specific forbidden tree","Talk to Iblis","Pray to any other than Allah"], ans:1, exp:"Allah forbade Adam and Hawwa from eating from a specific tree. Shaytan (Iblis) deceived them into eating from it, leading to their descent to earth." },
+  { topic:"Prophet Adam \u{1F54A}\u{FE0F}", q:"What was Adam's (AS) role on earth, as described in the Quran?", opts:["Khalifah (vicegerent/steward)","Ruler of all nations","The final prophet","Guardian of the heavens"], ans:0, exp:"The Quran (2:30) describes Adam (AS) as being appointed as khalifah on earth — a steward entrusted with the responsibility of upholding worship and justice." },
+  { topic:"Prophet Adam \u{1F54A}\u{FE0F}", q:"What did Allah teach Adam (AS) that the angels did not know, demonstrating his special status?", opts:["How to perform prayer","The names of all things","The words of the Quran","The secrets of the heavens"], ans:1, exp:"Allah taught Adam (AS) the names of all things (Quran 2:31-33). When the angels could not name them, Adam named them — showing his unique intellect and status." },
+  { topic:"Prophet Adam \u{1F54A}\u{FE0F}", q:"What material does the Quran say Allah used to create Adam (AS)?", opts:["Water and light","Fire and air","Clay / earth","Gold and dust"], ans:2, exp:"The Quran describes Adam (AS) as being created from clay (and various stages: dust, clay, altered mud). Allah then breathed His spirit into him, giving him life." },
+
+  // ── MIRACLES OF THE PROPHET ─────────────────────────────────────
+  { topic:"Miracles of the Prophet \u{1F54A}\u{FE0F}", q:"What is considered the greatest miracle of the Prophet Muhammad \uFE0F?", opts:["The splitting of the moon","The Quran","The Night Journey (Isra and Mi'raj)","Healing the sick"], ans:1, exp:"The Quran is the greatest and most enduring miracle of the Prophet \uFE0F. Unlike other miracles witnessed only at the time, the Quran remains accessible to all generations." },
+  { topic:"Miracles of the Prophet \u{1F54A}\u{FE0F}", q:"What is the name of the miraculous night journey of the Prophet \uFE0F from Makkah to Jerusalem and then up through the heavens?", opts:["The Hijrah","Isra and Mi'raj","Laylatul Qadr","Badr"], ans:1, exp:"The Isra was the miraculous journey from Makkah to Jerusalem (Al-Aqsa). The Mi'raj was the ascent through the heavens. The five daily prayers were ordained during this journey." },
+  { topic:"Miracles of the Prophet \u{1F54A}\u{FE0F}", q:"During the Mi'raj, what important act of worship was made obligatory for Muslims?", opts:["Fasting in Ramadan","The five daily prayers (Salah)","Zakat (charity)","Hajj (pilgrimage)"], ans:1, exp:"During the Mi'raj, Allah prescribed the five daily prayers as obligatory — originally fifty, reduced to five through the Prophet's \uFE0F intercession." },
+  { topic:"Miracles of the Prophet \u{1F54A}\u{FE0F}", q:"Which miracle of the Prophet \uFE0F is mentioned in Surah Al-Qamar of the Quran?", opts:["Water flowing from his fingers","The splitting of the moon","A tree walking towards him","Curing a blind man"], ans:1, exp:"Surah Al-Qamar (54:1) states: 'The Hour has drawn near, and the moon was split.' This miracle was shown to the disbelievers of Makkah." },
+  { topic:"Miracles of the Prophet \u{1F54A}\u{FE0F}", q:"What is the Arabic word for a miracle performed by a prophet?", opts:["Karamah","Mu'jizah","Barakah","Rizq"], ans:1, exp:"Mu'jizah is the Arabic word for a miracle granted to a prophet by Allah as proof of their prophethood. Karamah refers to miraculous acts granted to saints (Awliya)." },
+
+  // ── SOURCES OF ISLAMIC LAW ──────────────────────────────────────
+  { topic:"Sources of Islamic Law", q:"What are the two primary sources of Islamic law?", opts:["Ijma and Qiyas","The Quran and the Sunnah","Fiqh and Fatwa","Ijtihad and Taqlid"], ans:1, exp:"The two primary sources of Islamic law (Shariah) are the Quran (the direct word of Allah) and the Sunnah (the practice and teachings of the Prophet \uFE0F)." },
+  { topic:"Sources of Islamic Law", q:"What is 'Ijma' in Islamic law?", opts:["Personal interpretation by a scholar","The consensus of Muslim scholars","A Quranic verse relating to law","A ruling passed by the Caliph"], ans:1, exp:"Ijma refers to the consensus of Muslim scholars on a legal ruling. It is a secondary source of Islamic law alongside Qiyas (analogy)." },
+  { topic:"Sources of Islamic Law", q:"What is 'Qiyas' in Islamic law?", opts:["A type of supplication (dua)","Reasoning by analogy — applying a known ruling to a new similar situation","A collection of fatwas","The study of Arabic grammar"], ans:1, exp:"Qiyas is legal analogy — applying a ruling from the Quran or Sunnah to a new situation that shares the same underlying cause. It is the fourth source of Islamic law." },
+  { topic:"Sources of Islamic Law", q:"What is 'Fiqh'?", opts:["The study of the Quran's language","Islamic jurisprudence — the scholarly understanding and application of Shariah","A type of Islamic art","The biography of the Prophet \uFE0F"], ans:1, exp:"Fiqh is Islamic jurisprudence — the scholarly science of understanding and applying Shariah to practical situations, derived from the Quran, Sunnah, Ijma, and Qiyas." },
+  { topic:"Sources of Islamic Law", q:"What is a 'Fatwa'?", opts:["A type of Hadith","A religious ruling or legal opinion issued by a qualified scholar","A chapter of the Quran","The Islamic calendar"], ans:1, exp:"A Fatwa is a religious ruling or legal opinion issued by a qualified Islamic scholar (mufti) in response to a question about Islamic law." },
+
+  // ── CLEANLINESS IN ISLAM ────────────────────────────────────────
+  { topic:"Cleanliness in Islam", q:"What is the Arabic word for ritual purification by washing, required before prayer?", opts:["Tayammum","Wudu","Ghusl","Istinja"], ans:1, exp:"Wudu is the ritual washing performed before prayer. It involves washing the hands, mouth, nose, face, arms, wiping the head, and washing the feet." },
+  { topic:"Cleanliness in Islam", q:"What does the Prophet \uFE0F describe cleanliness (taharah) as being?", opts:["Half of good character","Half of faith (iman)","A sunnah of the prophets","One of the pillars of Islam"], ans:1, exp:"The Prophet \uFE0F said: 'Cleanliness is half of faith.' This hadith highlights the importance of both physical and spiritual purity in Islam." },
+  { topic:"Cleanliness in Islam", q:"What is 'Tayammum'?", opts:["Washing with scented soap","Dry purification using clean earth or dust when water is unavailable","A full body wash required after certain acts","Rinsing the mouth before prayer"], ans:1, exp:"Tayammum is dry purification using clean earth or dust when water is unavailable or harmful to use. It is a concession (rukhsah) from Allah." },
+  { topic:"Cleanliness in Islam", q:"What is 'Ghusl'?", opts:["Wiping the feet with water","A partial wash of hands and face","A full ritual bath of the entire body required in certain circumstances","Cleaning the teeth with a miswak"], ans:2, exp:"Ghusl is a full ritual bath of the entire body. It is required after certain circumstances and is also recommended on Fridays and Eid days." },
+
+  // ── ISLAMIC ART ─────────────────────────────────────────────────
+  { topic:"Islamic Art", q:"Which of the following is a key feature of traditional Islamic art and architecture?", opts:["Portraits of the Prophet \uFE0F","Geometric patterns and calligraphy","Realistic human sculptures","Landscape oil paintings"], ans:1, exp:"Islamic art is renowned for its intricate geometric patterns and Arabic calligraphy. These forms avoid figurative representations of Allah or the prophets." },
+  { topic:"Islamic Art", q:"What is the art of beautiful Arabic writing, widely used in Islamic art, called?", opts:["Arabesque","Calligraphy (Khatt)","Mosaic","Illumination"], ans:1, exp:"Arabic calligraphy (Khatt) is one of the highest forms of Islamic art, used to write Quranic verses and Islamic phrases. It is found in mosques, manuscripts, and architecture." },
+  { topic:"Islamic Art", q:"What is 'arabesque' in the context of Islamic art?", opts:["A style of Arabic poetry","An intricate repeating pattern of geometric and floral shapes","A type of mosque architecture","A calligraphy script style"], ans:1, exp:"Arabesque refers to intricate, repeating patterns of geometric shapes and stylised plant forms. These patterns reflect the infinite nature of Allah's creation." },
+  { topic:"Islamic Art", q:"Why does Islamic art generally avoid depicting human or animal figures in religious contexts?", opts:["Because drawing requires expensive materials","Because it is seen as imitating Allah's creation, which is discouraged in religious settings","Because Muslims are not skilled in figurative art","Because the Quran prohibits all forms of drawing"], ans:1, exp:"Islamic art avoids depicting humans or animals in religious contexts as it is seen as imitating Allah's act of creation. This led to a focus on geometry and calligraphy." },
+
+  // ── BIRTH OF THE PROPHET ────────────────────────────────────────
+  { topic:"Birth of the Prophet \u{1F54A}\u{FE0F}", q:"In which city was the Prophet Muhammad \uFE0F born?", opts:["Madinah","Jerusalem","Makkah","Ta'if"], ans:2, exp:"The Prophet \uFE0F was born in Makkah, into the tribe of Quraysh, from the noble clan of Banu Hashim, around 570 CE (the Year of the Elephant)." },
+  { topic:"Birth of the Prophet \u{1F54A}\u{FE0F}", q:"What was the name of the Prophet's \uFE0F father, who passed away before his birth?", opts:["Abdul Muttalib","Abu Talib","Abdullah","Abu Bakr"], ans:2, exp:"The Prophet's father was Abdullah ibn Abd al-Muttalib. He passed away before the Prophet \uFE0F was born, making him an orphan from birth." },
+  { topic:"Birth of the Prophet \u{1F54A}\u{FE0F}", q:"Why is the year of the Prophet's \uFE0F birth called the 'Year of the Elephant'?", opts:["Because elephants were common in Arabia that year","Because an army with elephants attacked the Kaaba and was miraculously destroyed","Because the Prophet \uFE0F was given the strength of an elephant","Because a large elephant was sacrificed to mark his birth"], ans:1, exp:"That year, Abraha led an army with elephants to destroy the Kaaba. Allah sent birds (Ababeel) that pelted them with stones, destroying the army — mentioned in Surah Al-Fil (105)." },
+  { topic:"Birth of the Prophet \u{1F54A}\u{FE0F}", q:"Who was the Prophet's \uFE0F mother?", opts:["Khadijah","Aminah","Fatimah","Halimah"], ans:1, exp:"The Prophet's mother was Aminah bint Wahb. She passed away when he was around six years old. He was then raised by his grandfather Abdul Muttalib and later his uncle Abu Talib." },
+
+  // ── PROPHET IN MAKKAH ───────────────────────────────────────────
+  { topic:"Prophet \u{1F54A}\u{FE0F} in Makkah", q:"What nickname was the Prophet \uFE0F known by among the people of Makkah before prophethood?", opts:["Al-Amin (The Trustworthy)","Al-Karim (The Noble)","Al-Sadiq (The Truthful)","Al-Wali (The Friend of Allah)"], ans:0, exp:"The Prophet \uFE0F was known as Al-Amin, meaning 'The Trustworthy', because of his outstanding honesty and integrity before prophethood." },
+  { topic:"Prophet \u{1F54A}\u{FE0F} in Makkah", q:"Who was the first person to accept Islam?", opts:["Abu Bakr","Ali ibn Abi Talib","Khadijah (RA)","Umar ibn al-Khattab"], ans:2, exp:"Khadijah (RA), the Prophet's \uFE0F wife, was the first person to accept Islam and support his mission. She is one of the greatest women in Islamic history." },
+  { topic:"Prophet \u{1F54A}\u{FE0F} in Makkah", q:"How did the Quraysh of Makkah generally respond to the Prophet's \uFE0F message in the early years?", opts:["They accepted Islam immediately","They opposed, mocked, and persecuted the early Muslims","They ignored him completely","They asked him to leave Makkah peacefully"], ans:1, exp:"The Quraysh fiercely opposed the Prophet's \uFE0F message, persecuting early Muslims. This led some Muslims to migrate to Abyssinia for safety." },
+  { topic:"Prophet \u{1F54A}\u{FE0F} in Makkah", q:"Who was the wealthy businesswoman who employed the Prophet \uFE0F for trade journeys and later proposed marriage to him?", opts:["Aisha (RA)","Fatimah (RA)","Khadijah (RA)","Sawdah (RA)"], ans:2, exp:"Khadijah (RA) employed the Prophet \uFE0F for trade journeys and was impressed by his honesty. She proposed marriage when he was 25 and she was around 40." },
+  { topic:"Prophet \u{1F54A}\u{FE0F} in Makkah", q:"What event marked the end of the Prophet's \uFE0F life in Makkah and the beginning of the Islamic calendar?", opts:["The Battle of Badr","The Hijrah (migration to Madinah)","The revelation of the Quran","The conquest of Makkah"], ans:1, exp:"The Hijrah was the migration of the Prophet \uFE0F and his companions from Makkah to Madinah in 622 CE. This marks the beginning of the Islamic (Hijri) calendar." },
+
+  // ── ISLAMIC MONTHS ──────────────────────────────────────────────
+  { topic:"Islamic Months", q:"What is the first month of the Islamic (Hijri) calendar?", opts:["Ramadan","Dhul Hijjah","Muharram","Rabi al-Awwal"], ans:2, exp:"Muharram is the first month of the Islamic lunar calendar. It is one of the four sacred months in which warfare was traditionally forbidden." },
+  { topic:"Islamic Months", q:"The Prophet \uFE0F is believed to have been born in which Islamic month?", opts:["Muharram","Rabi al-Awwal","Ramadan","Dhul Hijjah"], ans:1, exp:"The Prophet \uFE0F is widely believed to have been born in Rabi al-Awwal (the 3rd month), which means 'the first spring'." },
+  { topic:"Islamic Months", q:"In which month do Muslims perform the Hajj pilgrimage?", opts:["Shawwal","Ramadan","Rajab","Dhul Hijjah"], ans:3, exp:"Hajj is performed in Dhul Hijjah, the 12th and final month of the Islamic calendar. It is one of the four sacred months." },
+  { topic:"Islamic Months", q:"How many months are there in the Islamic (Hijri) calendar?", opts:["10","11","12","13"], ans:2, exp:"The Islamic (Hijri) calendar has 12 lunar months. The year is approximately 354 days — about 10-11 days shorter than the Gregorian solar year." },
+  { topic:"Islamic Months", q:"Which number month is Ramadan in the Islamic calendar?", opts:["7th","8th","9th","10th"], ans:2, exp:"Ramadan is the 9th month of the Islamic calendar and the holiest month, during which Muslims fast from dawn to sunset." },
+];
+
+const TOPICS = [...new Set(QUESTIONS.map(q => q.topic))];
+const COUNT_OPTIONS = [5, 10, 15, 20, 30, "All"];
+
+// ── STATE ──
+let selectedTopics = new Set(TOPICS);
+let questionCount = 20;
+let quizQuestions = [];
+let current = 0;
+let chosen = null;
+let score = 0;
+let answers = [];
+
+// ── INIT SETUP ──
+function initSetup() {
+  // Topic buttons
+  const grid = document.getElementById("topic-grid");
+  grid.innerHTML = "";
+  TOPICS.forEach(t => {
+    const btn = document.createElement("button");
+    btn.className = "topic-btn" + (selectedTopics.has(t) ? " active" : "");
+    btn.style.setProperty("--col", TOPIC_COLORS[t]);
+    btn.textContent = t;
+    btn.onclick = () => toggleTopic(t, btn);
+    grid.appendChild(btn);
+  });
+
+  // Count buttons
+  const cgrid = document.getElementById("count-grid");
+  cgrid.innerHTML = "";
+  COUNT_OPTIONS.forEach(n => {
+    const btn = document.createElement("button");
+    btn.className = "count-btn" + (questionCount === (n === "All" ? 999 : n) ? " active" : "");
+    btn.textContent = n;
+    btn.onclick = () => setCount(n === "All" ? 999 : n, btn);
+    cgrid.appendChild(btn);
+  });
+
+  updateCountHint();
+}
+
+function toggleTopic(t, btn) {
+  if (selectedTopics.has(t) && selectedTopics.size === 1) return;
+  if (selectedTopics.has(t)) selectedTopics.delete(t);
+  else selectedTopics.add(t);
+  btn.classList.toggle("active", selectedTopics.has(t));
+  updateCountHint();
+}
+
+function selectAllTopics() {
+  selectedTopics = new Set(TOPICS);
+  initSetup();
+}
+
+function clearTopics() {
+  selectedTopics = new Set([TOPICS[0]]);
+  initSetup();
+}
+
+function setCount(n, clickedBtn) {
+  questionCount = n;
+  document.querySelectorAll(".count-btn").forEach(b => b.classList.remove("active"));
+  clickedBtn.classList.add("active");
+  updateCountHint();
+}
+
+function updateCountHint() {
+  const avail = QUESTIONS.filter(q => selectedTopics.has(q.topic)).length;
+  const actual = Math.min(questionCount, avail);
+  document.getElementById("count-hint").innerHTML =
+    `${avail} questions available &middot; <strong>${actual}</strong> will be selected randomly`;
+}
+
+// ── START QUIZ ──
+function startQuiz() {
+  const filtered = QUESTIONS.filter(q => selectedTopics.has(q.topic));
+  const shuffled = filtered.sort(() => Math.random() - 0.5);
+  quizQuestions = shuffled.slice(0, Math.min(questionCount, shuffled.length));
+  current = 0; chosen = null; score = 0; answers = [];
+  showScreen("quiz");
+  renderQuestion();
+}
+
+// ── RENDER QUESTION ──
+function renderQuestion() {
+  const q = quizQuestions[current];
+  const total = quizQuestions.length;
+  const pct = ((current) / total) * 100;
+
+  document.getElementById("q-counter").textContent = `Question ${current + 1} of ${total}`;
+  document.getElementById("q-score").textContent = `${score} correct`;
+  document.getElementById("progress-fill").style.width = pct + "%";
+
+  const badge = document.getElementById("q-badge");
+  badge.textContent = q.topic;
+  badge.style.background = TOPIC_COLORS[q.topic] + "22";
+  badge.style.color = TOPIC_COLORS[q.topic];
+
+  document.getElementById("q-text").textContent = q.q;
+
+  const opts = document.getElementById("q-options");
+  opts.innerHTML = "";
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.innerHTML = `<span class="option-letter">${String.fromCharCode(65+i)}</span>${opt}`;
+    btn.onclick = () => selectOption(i);
+    opts.appendChild(btn);
+  });
+
+  document.getElementById("q-explanation").classList.add("hidden");
+  document.getElementById("btn-check").disabled = true;
+  document.getElementById("btn-check").classList.remove("hidden");
+  document.getElementById("btn-next").classList.add("hidden");
+  chosen = null;
+}
+
+function selectOption(i) {
+  const btns = document.querySelectorAll(".option-btn");
+  btns.forEach((b, idx) => {
+    b.classList.remove("selected");
+    if (idx === i) b.classList.add("selected");
+  });
+  chosen = i;
+  document.getElementById("btn-check").disabled = false;
+}
+
+function checkAnswer() {
+  if (chosen === null) return;
+  const q = quizQuestions[current];
+  const correct = chosen === q.ans;
+  if (correct) score++;
+  answers.push({ correct, topic: q.topic });
+
+  const btns = document.querySelectorAll(".option-btn");
+  btns.forEach((b, i) => {
+    b.classList.add("revealed");
+    b.classList.remove("selected");
+    if (i === q.ans) b.classList.add("correct");
+    else if (i === chosen) b.classList.add("wrong");
+  });
+
+  const exp = document.getElementById("q-explanation");
+  exp.innerHTML = `<strong>Explanation: </strong>${q.exp}`;
+  exp.classList.remove("hidden");
+
+  const pct = ((current + 1) / quizQuestions.length) * 100;
+  document.getElementById("progress-fill").style.width = pct + "%";
+  document.getElementById("q-score").textContent = `${score} correct`;
+
+  document.getElementById("btn-check").classList.add("hidden");
+  const nextBtn = document.getElementById("btn-next");
+  nextBtn.textContent = current + 1 < quizQuestions.length ? "Next Question →" : "See Results";
+  nextBtn.classList.remove("hidden");
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= quizQuestions.length) { showResults(); return; }
+  renderQuestion();
+}
+
+// ── RESULTS ──
+function showResults() {
+  showScreen("results");
+  const pct = Math.round((score / quizQuestions.length) * 100);
+  const grade = pct >= 90 ? "Excellent! ماشاءالله 🌟" : pct >= 70 ? "Well done! 👍" : pct >= 50 ? "Good effort — keep revising!" : "Keep going — practice makes perfect!";
+
+  document.getElementById("score-ring").style.background =
+    `conic-gradient(#2E6B5A ${pct * 3.6}deg, #DDD 0)`;
+  document.getElementById("score-pct").textContent = pct + "%";
+  document.getElementById("score-frac").textContent = `${score}/${quizQuestions.length}`;
+  document.getElementById("score-grade").textContent = grade;
+
+  // Topic breakdown
+  const stats = {};
+  TOPICS.forEach(t => { stats[t] = { correct: 0, total: 0 }; });
+  answers.forEach(a => { stats[a.topic].total++; if (a.correct) stats[a.topic].correct++; });
+
+  const rows = document.getElementById("breakdown-rows");
+  rows.innerHTML = "";
+  Object.entries(stats).filter(([,v]) => v.total > 0).forEach(([topic, stat]) => {
+    const p = Math.round((stat.correct / stat.total) * 100);
+    const col = TOPIC_COLORS[topic];
+    rows.innerHTML += `
+      <div class="breakdown-row">
+        <div class="breakdown-header">
+          <span style="color:${col};font-weight:bold">${topic}</span>
+          <span style="color:#888">${stat.correct}/${stat.total}</span>
+        </div>
+        <div class="breakdown-track">
+          <div class="breakdown-fill" style="width:${p}%;background:${col}"></div>
+        </div>
+      </div>`;
+  });
+}
+
+function goSetup() {
+  showScreen("setup");
+  initSetup();
+}
+
+// ── SCREEN HELPER ──
+function showScreen(name) {
+  ["setup","quiz","results"].forEach(s => {
+    document.getElementById("screen-"+s).classList.toggle("hidden", s !== name);
+  });
+}
+
+// ── BOOT ──
+initSetup();
+</script>
+</body>
+</html>
